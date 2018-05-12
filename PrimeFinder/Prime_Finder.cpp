@@ -3,12 +3,12 @@
 #include <iostream> //cout
 #include <iomanip>  //formatting
 #include <fstream>  //file_output
-#include <string>	//to_string
+#include <string>   //to_string
 //Multi-threading
 #include <thread>
 #include <future>
 //Timing
-#include <time.h>
+#include <ctime>
 //END INCLUDES
 
 //Code pieces
