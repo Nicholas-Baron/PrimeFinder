@@ -13,6 +13,7 @@
 //Code pieces
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
 #define COLUMN_SET setw(7)
+#define LAST_DIGIT(x) x % 10
 
 //Boolean Options
 #define WRITE_TO_FILE 0
@@ -55,14 +56,12 @@ void printNum (ofstream &output, const bigNum &i) {
 	}
 }
 
-inline unsigned short lastDigit (const bigNum &num) { return num % 10; }
-
 inline bool isMultipleOf3or5 (const bigNum &i) { return ( i % 5 == 0 && i != 5 ) || ( i % 3 == 0 && i != 3 ); }
 
 bool isPrime (const bigNum &val) {
 
 	//Single digit
-	if (val <= 10) {
+	if (val < 10) {
 
 		if (val == 2) {
 			return true;
@@ -75,7 +74,7 @@ bool isPrime (const bigNum &val) {
 		}
 	}
 
-	const auto last = lastDigit (val);
+	const auto last = LAST_DIGIT(val);
 
 	if (last % 2 == 0 || last == 5) { return false; }
 
