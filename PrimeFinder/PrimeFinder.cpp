@@ -35,14 +35,14 @@ const auto printSize = "Using " + to_string (sizeof (bigNum) * 8) + "-bit number
 const bigNum bounds[ ] = { 2,  99'000 };
 const bigNum amountOfNumbers = bounds[1] - bounds[0];
 
-const auto numToAnalyze = "Will analyze " + to_string (amountOfNumbers) + " numbers in " + to_string (amountOfNumbers / static_cast<double>(STEPSIZE)) + " groups.";
+const auto numToAnalyze = "Will analyze " + to_string (amountOfNumbers) + " numbers in " + to_string (amountOfNumbers / static_cast<double>( STEPSIZE )) + " groups.";
 
 const string header = printSize + " | " + numToAnalyze;
 
 void printNum (ofstream &output, const bigNum &i) {
-	
+
 	static int column = 0;
-	
+
 	cout << COLUMN_SET << i;
 	output << COLUMN_SET << i;
 
@@ -68,7 +68,7 @@ bool isPrime (const bigNum &val) {
 			return true;
 		} else if (val % 2 == 0) {
 			return false;
-		} else if (val == 9) { 
+		} else if (val == 9) {
 			return false;
 		} else {
 			return true;
@@ -77,10 +77,10 @@ bool isPrime (const bigNum &val) {
 
 	const auto last = lastDigit (val);
 
-	if ( last % 2 == 0 || last == 5) { return false; }
+	if (last % 2 == 0 || last == 5) { return false; }
 
 	for (bigNum i = 3; i <= val / 3; i += 2) {
-		if (isMultipleOf3or5(i)) { } else if (val % i == 0) { return false; }
+		if (isMultipleOf3or5 (i)) { } else if (val % i == 0) { return false; }
 	}
 
 	return true;
@@ -106,13 +106,13 @@ void watch (const bigNum &start) {
 
 int main ( ) {
 
-	output.open (myPrimeFile.c_str());
+	output.open (myPrimeFile.c_str ( ));
 
 	cout << header;
 
 	if (WRITE_HEADER_TO_FILE) {
 		output << header << endl;
-	} else { 
+	} else {
 		cout << " | Did not print the header to the file!" << endl;
 	}
 
@@ -130,8 +130,8 @@ int main ( ) {
 	ifstream truePrimeStream;
 	ifstream myPrimeStream;
 
-	truePrimeStream.open (truePrimeFile.c_str());
-	myPrimeStream.open (myPrimeFile.c_str());
+	truePrimeStream.open (truePrimeFile.c_str ( ));
+	myPrimeStream.open (myPrimeFile.c_str ( ));
 
 
 	if (truePrimeStream && myPrimeStream && WRITE_TO_FILE) {
@@ -141,9 +141,9 @@ int main ( ) {
 
 		unsigned int truePrime, myPrime;
 
-		while (truePrimeStream>>truePrime && myPrimeStream>>myPrime) {
+		while (truePrimeStream >> truePrime && myPrimeStream >> myPrime) {
 
-			if (myPrime != truePrime ) {
+			if (myPrime != truePrime) {
 				cout << COLUMN_SET << right << myPrime << COLUMN_SET << right << truePrime << endl;
 			}
 		}
