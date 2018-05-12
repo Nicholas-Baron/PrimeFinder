@@ -15,8 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PrimeFinder.cpp">
+    <ClCompile Include="Is_Prime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Prime_Finder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Is_Prime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,3 +1,4 @@
+#include "Is_Prime.h"
 //Output things
 #include <iostream> //cout
 #include <iomanip>  //formatting
@@ -13,12 +14,12 @@
 //Code pieces
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
 #define COLUMN_SET setw(7)
-#define LAST_DIGIT(x) x % 10
 
 //Boolean Options
 #define WRITE_TO_FILE 0
 #define WRITE_HEADER_TO_FILE 0
-#define USE_EVENS 0
+#define INCREMENT_TWO 0
+#define ERROR_CHECK 0
 
 // Numerical Option
 #define STEPSIZE 100
@@ -26,7 +27,6 @@
 using namespace std;
 
 typedef unsigned char smallNum;
-typedef unsigned long int bigNum;
 
 const string myPrimeFile = "primes.txt";
 const string truePrimeFile = "true_primes.txt";
@@ -56,46 +56,17 @@ void printNum (ofstream &output, const bigNum &i) {
 	}
 }
 
-inline bool isMultipleOf3or5 (const bigNum &i) { return ( i % 5 == 0 && i != 5 ) || ( i % 3 == 0 && i != 3 ); }
-
-bool isPrime (const bigNum &val) {
-
-	//Single digit
-	if (val < 10) {
-
-		if (val == 2) {
-			return true;
-		} else if (val % 2 == 0) {
-			return false;
-		} else if (val == 9) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	const auto last = LAST_DIGIT(val);
-
-	if (last % 2 == 0 || last == 5) { return false; }
-
-	for (bigNum i = 3; i <= val / 3; i += 2) {
-		if (isMultipleOf3or5 (i)) { } else if (val % i == 0) { return false; }
-	}
-
-	return true;
-}
-
 ofstream output;
 
 void watch (const bigNum &start) {
 
 	future<bool> watching[STEPSIZE];
 
-	for (smallNum i = 0; i < STEPSIZE; i += 1 + USE_EVENS) {
+	for (smallNum i = 0; i < STEPSIZE; i += 1 + INCREMENT_TWO) {
 		watching[i] = async (isPrime, start + i);
 	}
 
-	for (smallNum i = 0; i < STEPSIZE; i += 1 + USE_EVENS) {
+	for (smallNum i = 0; i < STEPSIZE; i += 1 + INCREMENT_TWO) {
 		if (watching[i].get ( )) {
 			printNum (output, start + i);
 		}
@@ -133,7 +104,7 @@ int main ( ) {
 	myPrimeStream.open (myPrimeFile.c_str ( ));
 
 
-	if (truePrimeStream && myPrimeStream && WRITE_TO_FILE) {
+	if (truePrimeStream && myPrimeStream && WRITE_TO_FILE && ERROR_CHECK) {
 
 		cout << endl << "Error Search" << endl;
 		cout << COLUMN_SET << right << "Mine" << COLUMN_SET << right << "True" << endl;
