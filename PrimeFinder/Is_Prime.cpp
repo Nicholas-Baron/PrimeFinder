@@ -1,6 +1,6 @@
 #include "Is_Prime.h"
 
-bool isPrime ( const bigNum &val ) {
+bool isPrime ( const PRIME_TYPE &val ) {
 
 	//Single digit
 	if ( val < 10 ) {
@@ -20,7 +20,7 @@ bool isPrime ( const bigNum &val ) {
 
 	if ( last % 2 == 0 || last == 5 ) { return false; }
 
-	for ( bigNum i = 3; i <= val / 3; i += 2 ) {
+	for (PRIME_TYPE i = 3; i <= val / 3; i += 2 ) {
 		if ( isMultipleOf3or5 ( i ) ) { } else if ( val % i == 0 ) { return false; }
 	}
 
