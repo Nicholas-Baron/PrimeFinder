@@ -39,14 +39,14 @@ const PRIME_TYPE numGroups = amountOfNumbers / STEPSIZE;
 const string numToAnalyze = "Will analyze " + to_string(amountOfNumbers) + " numbers in " + to_string(numGroups) + " groups.";
 const string header = printSize + " | " + numToAnalyze;
 
-void printNum(ofstream &output, const PRIME_TYPE &i) {
+void printNum(ofstream &fileOut, const PRIME_TYPE &i) {
 
 	static short column = 0;
 	static short row = 1;
 
 	cout << COLUMN_SET << i;
 	if(WRITE_TO_FILE)
-		output << COLUMN_SET << i;
+		fileOut << COLUMN_SET << i;
 
 	column++;
 
@@ -57,7 +57,7 @@ void printNum(ofstream &output, const PRIME_TYPE &i) {
 		
 		cout << endl; 
 		if(WRITE_TO_FILE)
-			output << endl;
+			fileOut << endl;
 	
 		column = 0;
 		row++;
@@ -95,9 +95,7 @@ int main() {
 	auto lastSecond = start;
 
 	for(PRIME_TYPE i = bounds[0]; i <= bounds[1]; i += STEPSIZE) {
-		thread* watchers = new thread(watch, i);
-		watchers->join();
-		delete watchers;
+		watch(i);
 
 		if(PRINT_AT_SECOND && static_cast<double>(clock() - lastSecond) / CLOCKS_PER_SEC >= 1) {
 			cout << " 1 second passed!";
