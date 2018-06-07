@@ -51,14 +51,14 @@ void printNum(ofstream &fileOut, const PRIME_TYPE &i) {
 	column++;
 
 	if(column == 10) {
-		
-		if(PRINT_ROW_NUM) 
+
+		if(PRINT_ROW_NUM)
 			cout << setw(10) << "Row #" << setw(5) << right << row;
-		
-		cout << endl; 
+
+		cout << endl;
 		if(WRITE_TO_FILE)
 			fileOut << endl;
-	
+
 		column = 0;
 		row++;
 	}
@@ -71,7 +71,7 @@ void watch(const PRIME_TYPE &start) {
 	future<bool> watching[STEPSIZE];
 
 	for(unsigned short i = 0; i < STEPSIZE; i += 1 + INCREMENT_TWO) {
-		watching[i] = async(isPrime, start + i);
+		watching[i] = async(launch::async, isPrime, start + i);
 	}
 
 	for(unsigned short i = 0; i < STEPSIZE; i += 1 + INCREMENT_TWO) {
@@ -103,7 +103,7 @@ int main() {
 		}
 	}
 
-	cout << endl << "Seconds elapsed: " << (static_cast<double>(clock() - start) / CLOCKS_PER_SEC) << endl;
+	cout << endl << "Milliseconds elapsed: " << (static_cast<double>(clock() - start) / CLOCKS_PER_MS) << endl;
 
 	output.close();
 
@@ -130,5 +130,8 @@ int main() {
 		myPrimeStream.close();
 	}
 
-	cin.get();
+#ifdef _WIN32
+	system("pause");
+#endif // _WIN32
+
 }
