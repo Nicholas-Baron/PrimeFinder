@@ -110,7 +110,7 @@ int main() {
 #endif
 	}
 
-	cout << endl << "Seconds elapsed: " << (static_cast<double>(clock() - start) / CLOCKS_PER_SEC) << endl;
+	cout << endl << "Milliseconds elapsed: " << (static_cast<double>(clock() - start) / CLOCKS_PER_MS) << endl;
 
 	fileOutput.close();
 
