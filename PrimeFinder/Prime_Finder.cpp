@@ -18,13 +18,10 @@
 //Boolean Options
 #define WRITE_TO_FILE 0
 #define WRITE_HEADER_TO_FILE 0
-#define INCREMENT_TWO 0
+#define INCREMENT_TWO 1
 #define ERROR_CHECK 0
 #define PRINT_AT_SECOND 0
 #define PRINT_ROW_NUM 0
-
-// Numerical Option
-#define STEPSIZE 100
 
 using namespace std;
 
@@ -32,64 +29,72 @@ const string myPrimeFile = "primes.txt";
 const string truePrimeFile = "true_primes.txt";
 const string printSize = "Using " + to_string(sizeof(PRIME_TYPE) * 8) + "-bit numbers";
 
-const PRIME_TYPE bounds[] = {2,  14'302};
-const PRIME_TYPE amountOfNumbers = bounds[1] - bounds[0];
-const PRIME_TYPE numGroups = amountOfNumbers / STEPSIZE;
+constexpr PRIME_TYPE bounds[] = {3,  15'001};
+constexpr auto amountOfNumbers = bounds[1] - bounds[0];
+
+constexpr unsigned short STEPSIZE = 100;
+constexpr auto numGroups = amountOfNumbers / STEPSIZE;
 
 const string numToAnalyze = "Will analyze " + to_string(amountOfNumbers) + " numbers in " + to_string(numGroups) + " groups.";
 const string header = printSize + " | " + numToAnalyze;
 
-void printNum(ofstream &fileOut, const PRIME_TYPE &i) {
+ofstream fileOutput (myPrimeFile.c_str ( ));
+
+void printNum(const PRIME_TYPE &i) {
 
 	static short column = 0;
 	static short row = 1;
 
 	cout << COLUMN_SET << i;
-	if(WRITE_TO_FILE)
-		fileOut << COLUMN_SET << i;
 
+#if WRITE_TO_FILE
+	fileOutput << COLUMN_SET << i;
+#endif
 	column++;
 
 	if(column == 10) {
 		
-		if(PRINT_ROW_NUM) 
-			cout << setw(10) << "Row #" << setw(5) << right << row;
-		
+#if PRINT_ROW_NUM
+		cout << setw(10) << "Row #" << setw(5) << right << row;
+#endif
 		cout << endl; 
-		if(WRITE_TO_FILE)
-			fileOut << endl;
-	
+
+#if WRITE_TO_FILE
+		fileOutput << endl;
+#endif
 		column = 0;
 		row++;
 	}
 }
 
-ofstream output(myPrimeFile.c_str());
-
 void watch(const PRIME_TYPE &start) {
 
-	future<bool> watching[STEPSIZE];
+	const auto watching = new future<bool>[STEPSIZE];
 
-	for(unsigned short i = 0; i < STEPSIZE; i += 1 + INCREMENT_TWO) {
+	constexpr unsigned incre = 1 + INCREMENT_TWO;
+
+	for(unsigned short i = 0; i < STEPSIZE; i += incre) {
 		watching[i] = async(isPrime, start + i);
 	}
 
-	for(unsigned short i = 0; i < STEPSIZE; i += 1 + INCREMENT_TWO) {
-		if(watching[i].get()) {
-			printNum(output, start + i);
-		}
-
+	for(unsigned short i = 0; i < STEPSIZE; i += incre) {
+		if(watching[i].get()) 
+			printNum(start + i);
 	}
+
+	delete[ ] watching;
 }
 
 int main() {
 	cout << header;
 
-	if(WRITE_HEADER_TO_FILE) {
-		output << header << endl;
-	} else {
-		cout << " | Did not print the header to the file!" << endl;
-	}
+#if WRITE_HEADER_TO_FILE
+		fileOutput << header << endl;
+#else 
+		cout << " | Did not print the header to the file!";
+#endif
+
+	cout << endl;
 
 	const auto start = clock();
 	auto lastSecond = start;
@@ -97,17 +102,19 @@ int main() {
 	for(PRIME_TYPE i = bounds[0]; i <= bounds[1]; i += STEPSIZE) {
 		watch(i);
 
-		if(PRINT_AT_SECOND && static_cast<double>(clock() - lastSecond) / CLOCKS_PER_SEC >= 1) {
+#if PRINT_AT_SECOND
+		if(static_cast<double>(clock() - lastSecond) / CLOCKS_PER_SEC >= 1) {
 			cout << " 1 second passed!";
 			lastSecond = clock();
 		}
+#endif
 	}
 
 	cout << endl << "Seconds elapsed: " << (static_cast<double>(clock() - start) / CLOCKS_PER_SEC) << endl;
 
-	output.close();
+	fileOutput.close();
 
-	if(WRITE_TO_FILE && ERROR_CHECK) {
+#if WRITE_TO_FILE && ERROR_CHECK
 
 		ifstream truePrimeStream(truePrimeFile.c_str());
 		ifstream myPrimeStream(myPrimeFile.c_str());
@@ -128,7 +135,11 @@ int main() {
 
 		truePrimeStream.close();
 		myPrimeStream.close();
-	}
+#endif
 
-	cin.get();
+#ifdef _WIN32
+	system ("pause");
+#endif
+
+	return 0;
 }

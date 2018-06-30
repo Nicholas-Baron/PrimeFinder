@@ -3,7 +3,7 @@
 bool isPrime ( const PRIME_TYPE &val ) {
 
 	//Single digit
-	if ( val < 10 ) {
+	if ( val <= 10 ) {
 
 		if ( val == 2 ) {
 			return true;
