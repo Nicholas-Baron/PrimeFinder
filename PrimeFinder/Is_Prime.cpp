@@ -16,9 +16,7 @@ bool isPrime(const PRIME_TYPE &val) {
 		}
 	}
 
-	const auto last = LAST_DIGIT(val);
-
-	if(last % 2 == 0 || last == 5) { return false; }
+	if( LAST_DIGIT (val) % 2 == 0 || LAST_DIGIT (val) == 5) { return false; }
 
 	for(PRIME_TYPE i = 3; i <= val / 3; i += 2) {
 		if(!isMultipleOf3or5(i) && val % i == 0) { return false; }

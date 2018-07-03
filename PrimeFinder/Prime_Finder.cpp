@@ -8,12 +8,8 @@
 #include <thread>
 #include <future>
 //Timing
-#include <ctime>
+#include <chrono>
 //END INCLUDES
-
-//Code pieces
-#define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
-#define COLUMN_SET setw(7)
 
 //Boolean Options
 #define WRITE_TO_FILE 0
@@ -23,119 +19,132 @@
 #define PRINT_AT_SECOND 0
 #define PRINT_ROW_NUM 0
 
-using namespace std;
+const std::string myPrimeFile = "primes.txt";
+const std::string truePrimeFile = "true_primes.txt";
+const std::string printSize = "Using " + std::to_string (sizeof (PRIME_TYPE) * 8) + "-bit numbers";
 
-const string myPrimeFile = "primes.txt";
-const string truePrimeFile = "true_primes.txt";
-const string printSize = "Using " + to_string(sizeof(PRIME_TYPE) * 8) + "-bit numbers";
-
-constexpr PRIME_TYPE bounds[] = {3,  15'001};
+constexpr PRIME_TYPE bounds[ ] = { 3,  99'999 };
 constexpr auto amountOfNumbers = bounds[1] - bounds[0];
 
 constexpr unsigned short STEPSIZE = 100;
 constexpr auto numGroups = amountOfNumbers / STEPSIZE;
 
-const string numToAnalyze = "Will analyze " + to_string(amountOfNumbers) + " numbers in " + to_string(numGroups) + " groups.";
-const string header = printSize + " | " + numToAnalyze;
+constexpr unsigned short NUM_COLUMNS = 20;
+constexpr unsigned short COLUMN_WIDTH = 10;
+#define COLUMN_SET std::setw(COLUMN_WIDTH)
 
-ofstream fileOutput (myPrimeFile.c_str ( ));
+const std::string numToAnalyze = "Will analyze " + std::to_string (amountOfNumbers) + " numbers in " + std::to_string (numGroups) + " groups.";
+const std::string header = printSize + " | " + numToAnalyze;
 
-void printNum(const PRIME_TYPE &i) {
+std::ofstream fileOutput (myPrimeFile.c_str ( ));
+
+void printNum (const PRIME_TYPE &i) {
 
 	static short column = 0;
 	static short row = 1;
 
-	cout << COLUMN_SET << i;
+	std::cout << COLUMN_SET << i;
 
-#if WRITE_TO_FILE
-	fileOutput << COLUMN_SET << i;
-#endif
+	if constexpr (WRITE_TO_FILE)
+		fileOutput << COLUMN_SET << i;
+
 	column++;
 
-	if(column == 10) {
-		
-#if PRINT_ROW_NUM
-		cout << setw(10) << "Row #" << setw(5) << right << row;
-#endif
-		cout << endl; 
+	if (column == NUM_COLUMNS) {
 
-#if WRITE_TO_FILE
-		fileOutput << endl;
-#endif
+		using namespace std;
+
+		if constexpr (PRINT_ROW_NUM){
+			cout << setw (10) << "Row #" << setw (5) << right << row;
+		}
+		cout << endl;
+		
+		if constexpr ( WRITE_TO_FILE ) {
+			fileOutput << endl;
+		}
+		
 		column = 0;
 		row++;
 	}
 }
 
-void watch(const PRIME_TYPE &start) {
+void watch (const PRIME_TYPE &start) {
 
+	using namespace std;
 	const auto watching = new future<bool>[STEPSIZE];
 
 	constexpr unsigned incre = 1 + INCREMENT_TWO;
 
-	for(unsigned short i = 0; i < STEPSIZE; i += incre) {
-		watching[i] = async(isPrime, start + i);
+	for (unsigned short i = 0; i < STEPSIZE; i += incre) {
+		watching[i] = async (isPrime, start + i);
 	}
 
-	for(unsigned short i = 0; i < STEPSIZE; i += incre) {
-		if(watching[i].get()) 
-			printNum(start + i);
+	for (unsigned short i = 0; i < STEPSIZE; i += incre) {
+		if (watching[i].get ( ))
+			printNum (start + i);
 	}
 
 	delete[ ] watching;
 }
 
-int main() {
+int main ( ) {
+
+	using namespace std;
 	cout << header;
 
-#if WRITE_HEADER_TO_FILE
+	if constexpr ( WRITE_HEADER_TO_FILE ) {
 		fileOutput << header << endl;
-#else 
+	} else {
 		cout << " | Did not print the header to the file!";
-#endif
+	}
 
 	cout << endl;
 
-	const auto start = clock();
-	auto lastSecond = start;
+	using namespace std::chrono;
+	const auto start = high_resolution_clock::now ( );
 
-	for(PRIME_TYPE i = bounds[0]; i <= bounds[1]; i += STEPSIZE) {
-		watch(i);
+	if constexpr ( PRINT_AT_SECOND ){
+		auto lastSecond = start;
+	}
 
+	for (PRIME_TYPE i = bounds[0]; i <= bounds[1]; i += STEPSIZE) {
+		watch (i);
+
+		//This is needed as lastSecond is in a different scope
 #if PRINT_AT_SECOND
-		if(static_cast<double>(clock() - lastSecond) / CLOCKS_PER_SEC >= 1) {
+		if (high_resolution_clock::now ( ) - lastSecond >= 1s) {
 			cout << " 1 second passed!";
-			lastSecond = clock();
+			lastSecond = high_resolution_clock::now ( );
 		}
 #endif
 	}
 
-	cout << endl << "Milliseconds elapsed: " << (static_cast<double>(clock() - start) / CLOCKS_PER_MS) << endl;
+	cout << endl << "Milliseconds elapsed: " << duration_cast<milliseconds>( high_resolution_clock::now ( ) - start ).count ( ) << endl;
 
-	fileOutput.close();
+	fileOutput.close ( );
 
-#if WRITE_TO_FILE && ERROR_CHECK
+	if constexpr ( WRITE_TO_FILE && ERROR_CHECK ) {
 
-		ifstream truePrimeStream(truePrimeFile.c_str());
-		ifstream myPrimeStream(myPrimeFile.c_str());
+		ifstream truePrimeStream (truePrimeFile.c_str ( ));
+		ifstream myPrimeStream (myPrimeFile.c_str ( ));
 
-		if(truePrimeStream && myPrimeStream) {
+		if (truePrimeStream && myPrimeStream) {
 
 			cout << endl << "Error Search" << endl;
 			cout << COLUMN_SET << right << "Mine" << COLUMN_SET << right << "True" << endl;
 
 			PRIME_TYPE truePrime, myPrime;
-			while(truePrimeStream >> truePrime && myPrimeStream >> myPrime) {
+			while (truePrimeStream >> truePrime && myPrimeStream >> myPrime) {
 
-				if(myPrime != truePrime) {
+				if (myPrime != truePrime) {
 					cout << COLUMN_SET << right << myPrime << COLUMN_SET << right << truePrime << endl;
 				}
 			}
 		}
 
-		truePrimeStream.close();
-		myPrimeStream.close();
-#endif
+		truePrimeStream.close ( );
+		myPrimeStream.close ( );
+	}
 
 #ifdef _WIN32
 	system ("pause");
