@@ -23,7 +23,7 @@ const std::string myPrimeFile = "primes.txt";
 const std::string truePrimeFile = "true_primes.txt";
 const std::string printSize = "Using " + std::to_string (sizeof (PRIME_TYPE) * 8) + "-bit numbers";
 
-constexpr PRIME_TYPE bounds[ ] = { 3,  99'999 };
+constexpr PRIME_TYPE bounds[ ] = { 3,  9'999 };
 constexpr auto amountOfNumbers = bounds[1] - bounds[0];
 
 constexpr unsigned short STEPSIZE = 100;
@@ -71,16 +71,16 @@ void printNum (const PRIME_TYPE &i) {
 void watch (const PRIME_TYPE &start) {
 
 	using namespace std;
-	const auto watching = new future<bool>[STEPSIZE];
 
-	constexpr unsigned incre = 1 + INCREMENT_TWO;
+	constexpr unsigned short incre = 1 + INCREMENT_TWO;
+	const auto watching = new future<bool>[STEPSIZE];
 
 	for (unsigned short i = 0; i < STEPSIZE; i += incre) {
 		watching[i] = async (isPrime, start + i);
 	}
 
 	for (unsigned short i = 0; i < STEPSIZE; i += incre) {
-		if (watching[i].get ( ))
+		if (watching[i].get())
 			printNum (start + i);
 	}
 
@@ -140,6 +140,15 @@ int main ( ) {
 					cout << COLUMN_SET << right << myPrime << COLUMN_SET << right << truePrime << endl;
 				}
 			}
+		} else { 
+			cout << "Failed to find file(s) ";
+			if (!truePrimeStream) {
+				cout << truePrimeFile << " ";
+			}
+			if (!myPrimeStream) {
+				cout << myPrimeFile;
+			}
+			cout << endl;
 		}
 
 		truePrimeStream.close ( );
