@@ -15,8 +15,8 @@
 constexpr auto WRITE_TO_FILE = false;
 constexpr auto WRITE_HEADER_TO_FILE = false;
 
-#define ERROR_CHECK 0
-#define PRINT_AT_SECOND 0
+constexpr auto ERROR_CHECK = false;
+constexpr auto PRINT_AT_SECOND = false;
 constexpr auto PRINT_ROW_NUM = false;
 
 const std::string myPrimeFile = "primes.txt";
@@ -67,7 +67,7 @@ void printNum(const PRIME_TYPE &i) {
 	}
 }
 
-void watch(const PRIME_TYPE &start) {
+void watch(const PRIME_TYPE& start) {
 	using namespace std;
 
 	constexpr unsigned short incre = 1 + INCREMENT_TWO;
