@@ -1,4 +1,4 @@
-#include "Is_Prime.h"
+#include "Is_Prime.hpp"
 
 bool isPrime (const PRIME_TYPE &val) {
 

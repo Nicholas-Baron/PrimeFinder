@@ -23,7 +23,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Is_Prime.h">
+    <ClInclude Include="Is_Prime.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

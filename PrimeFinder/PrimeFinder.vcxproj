@@ -116,7 +116,7 @@
     <ClCompile Include="Prime_Finder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Is_Prime.h" />
+    <ClInclude Include="Is_Prime.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

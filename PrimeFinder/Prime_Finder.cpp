@@ -1,9 +1,10 @@
-#include "Is_Prime.h"
+#include "Is_Prime.hpp"
 //Output things
 #include <iostream> //cout
 #include <iomanip>  //formatting
 #include <fstream>  //file_output
 #include <string>   //to_string
+#include <array>
 //Multi-threading
 #include <thread>
 #include <future>
@@ -19,7 +20,6 @@ constexpr auto ERROR_CHECK = false;
 constexpr auto PRINT_AT_SECOND = false;
 constexpr auto PRINT_ROW_NUM = false;
 
-const std::string myPrimeFile = "primes.txt";
 const std::string truePrimeFile = "true_primes.txt";
 const std::string printSize = "Using " + std::to_string(sizeof(PRIME_TYPE) * 8) + "-bit numbers";
 
@@ -37,52 +37,61 @@ constexpr unsigned short COLUMN_WIDTH = 10;
 const std::string numToAnalyze = "Will analyze " + std::to_string(amountOfNumbers) + " numbers in " + std::to_string(numGroups) + " groups.";
 const std::string header = printSize + " | " + numToAnalyze;
 
-std::ofstream fileOutput(myPrimeFile);
+namespace FileWork{
 
-void printNum(const PRIME_TYPE &i) {
-	static short column = 0;
-	static short row = 1;
+	const std::string myPrimeFile = "primes.txt";
 
-	std::cout << COLUMN_SET << i;
+	auto& fileOutput(){
+		static std::ofstream toRet(myPrimeFile);
+		return toRet;
+	}
+	//std::ofstream fileOutput(myPrimeFile);
 
-	if constexpr(WRITE_TO_FILE)
-		fileOutput << COLUMN_SET << i;
+	void printNum(const PRIME_TYPE &i) {
+		static short column = 0;
+		static short row = 1;
 
-	column++;
+		std::cout << COLUMN_SET << i;
 
-	if(column == NUM_COLUMNS) {
-		using namespace std;
+		if constexpr(WRITE_TO_FILE)
+			fileOutput() << COLUMN_SET << i;
 
-		if constexpr(PRINT_ROW_NUM) {
-			cout << setw(10) << "Row #" << setw(5) << right << row;
+		column++;
+	
+		if(column == NUM_COLUMNS) {
+			using namespace std;
+
+			if constexpr(PRINT_ROW_NUM) {
+				cout << setw(10) << "Row #" << setw(5) << right << row;
+			}
+			cout << endl;
+
+			if constexpr(WRITE_TO_FILE) {
+				fileOutput() << endl;
+			}
+
+			column = 0;
+			row++;
 		}
-		cout << endl;
-
-		if constexpr(WRITE_TO_FILE) {
-			fileOutput << endl;
-		}
-
-		column = 0;
-		row++;
 	}
 }
 
 void watch(const PRIME_TYPE& start) {
 	using namespace std;
 
-	constexpr unsigned short incre = 1 + INCREMENT_TWO;
-	const auto watching = new future<bool>[STEPSIZE];
+	constexpr auto incre = 1 + INCREMENT_TWO;
+
+	array<future<bool>, STEPSIZE> watching;
 
 	for(unsigned short i = 0; i < STEPSIZE; i += incre) {
-		watching[i] = async(isPrime, start + i);
+		watching.at(i) = async(isPrime, start + i);
 	}
 
 	for(unsigned short i = 0; i < STEPSIZE; i += incre) {
-		if(watching[i].get())
-			printNum(start + i);
+		if(watching.at(i).get())
+			FileWork::printNum(start + i);
 	}
 
-	delete[] watching;
 }
 
 int main() {
@@ -90,7 +99,7 @@ int main() {
 	cout << header;
 
 	if constexpr(WRITE_HEADER_TO_FILE) {
-		fileOutput << header << endl;
+		FileWork::fileOutput() << header << endl;
 	} else {
 		cout << " | Did not print the header to the file!";
 	}
@@ -118,11 +127,11 @@ int main() {
 
 	cout << endl << "Milliseconds elapsed: " << duration_cast<milliseconds>(high_resolution_clock::now() - start).count() << endl;
 
-	fileOutput.close();
+	FileWork::fileOutput().close();
 
 	if constexpr(WRITE_TO_FILE && ERROR_CHECK) {
 		ifstream truePrimeStream(truePrimeFile);
-		ifstream myPrimeStream(myPrimeFile);
+		ifstream myPrimeStream(FileWork::myPrimeFile);
 
 		if(truePrimeStream && myPrimeStream) {
 			cout << endl << "Error Search" << endl;
@@ -140,7 +149,7 @@ int main() {
 				cout << truePrimeFile << " ";
 			}
 			if(!myPrimeStream) {
-				cout << myPrimeFile;
+				cout << FileWork::myPrimeFile;
 			}
 			cout << endl;
 		}
