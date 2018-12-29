@@ -9,12 +9,12 @@ BIG_OPTIONS="-format-style='none' Prime_Finder.cpp Is_Prime.cpp *.hpp -- -std=c+
 echo Using following options | tee $FILE
 echo
 
-clang-tidy-6.0 -dump-config | tee -a $FILE
+clang-tidy -dump-config | tee -a $FILE
 
 echo
 echo Starting General Clean | tee -a $FILE
 echo
 
-clang-tidy-6.0 $BIG_OPTIONS  | tee -a $FILE
+clang-tidy $BIG_OPTIONS  | tee -a $FILE
 
 echo Done | tee -a $FILE

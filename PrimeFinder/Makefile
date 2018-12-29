@@ -1,3 +1,3 @@
 debug_run:
-	@g++ -std=c++1z -o PrimeFinder Prime_Finder.cpp Is_Prime.h Is_Prime.cpp -pthread
+	@g++ -Wall -pedantic -std=c++1z Prime_Finder.cpp Is_Prime.hpp Is_Prime.cpp -pthread -o PrimeFinder
 	@./PrimeFinder

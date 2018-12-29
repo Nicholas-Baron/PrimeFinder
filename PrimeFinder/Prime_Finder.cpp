@@ -31,7 +31,7 @@ constexpr unsigned short STEPSIZE = 100;
 constexpr auto numGroups = amountOfNumbers / STEPSIZE;
 
 constexpr unsigned short NUM_COLUMNS = 20;
-constexpr unsigned short COLUMN_WIDTH = 10;
+constexpr unsigned short COLUMN_WIDTH = 7;
 #define COLUMN_SET std::setw(COLUMN_WIDTH)
 
 const std::string numToAnalyze = "Will analyze " + std::to_string(amountOfNumbers) + " numbers in " + std::to_string(numGroups) + " groups.";
@@ -109,9 +109,9 @@ int main() {
 	using namespace std::chrono;
 	const auto start = high_resolution_clock::now();
 
-	if constexpr(PRINT_AT_SECOND) {
-		auto lastSecond = start;
-	}
+#if PRINT_AT_SECOND
+	auto lastSecond = start;
+#endif
 
 	for(PRIME_TYPE i = bounds[0]; i <= bounds[1]; i += STEPSIZE) {
 		watch(i);
